@@ -1,8 +1,10 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Board
 {
     public static SweeperCell[][] populateArray(int boardSize)
+            // Populates an array with cell objects
     {
         // Create a 2d array to be filled with mine cell class objects
         SweeperCell[][] arr;
@@ -29,12 +31,13 @@ public class Board
     }
 
     public static SweeperCell[][] addMines(int boardSize)
+            // Adds mines to the hidden array
     {
         SweeperCell[][] cellArray = populateArray(boardSize);
 
         // MINES
         // - Create an ArrayList of random numbers equal to BoardSize - these will be the mines
-        ArrayList<Integer> randoms = new ArrayList<Integer>();
+        ArrayList<Integer> randoms = new ArrayList<>();
 
         for (int i = 0; i < boardSize; i++)
         {
@@ -101,11 +104,89 @@ public class Board
         return cellArray;
     }
 
-    public static String[][] displayArray(int boardSize)
-            // Creates the array to be seen by the
+    public static void explodey (int i, int j, int  boardSize, SweeperCell[][] mineData)
+            // Checks all surrounding cells to see if they are already visible or out of bounds, if they are neither,
+            // it makes those cells visible, and for each newly visible cell it repeats the same cycle recursively
+            // and stops when it reveals a numbered square or the edge of the grid/
     {
-        // Call populateArray to create hidden grid with mines
-        SweeperCell[][] mineData = addMines(boardSize);
+
+        if (i != 0 && j != 0 && !mineData[i - 1][j - 1].isVisible) {
+            mineData[i - 1][j - 1].isVisible = true;
+            if (mineData[i - 1][j - 1].proximityNumber == 0) {
+                explodey(i - 1,j - 1,boardSize,mineData);
+            }
+        }
+        if (i != 0 && j != 0) {
+            mineData[i - 1][j].isVisible = true;
+            if (mineData[i - 1][j].proximityNumber == 0 && !mineData[i - 1][j].isVisible) {
+                explodey(i - 1, j, boardSize, mineData);
+            }
+        }
+        if (i != 0 && j < (boardSize - 1) && !mineData[i - 1][j + 1].isVisible) {
+            mineData[i - 1][j + 1].isVisible = true;
+            if (mineData[i - 1][j + 1].proximityNumber == 0) {
+                explodey(i - 1, j + 1, boardSize, mineData);
+            }
+        }
+        if (j != 0  && !mineData[i][j - 1].isVisible) {
+            mineData[i][j - 1].isVisible = true;
+            if (mineData[i][j - 1].proximityNumber == 0) {
+                explodey(i, j - 1, boardSize, mineData);
+            }
+        }
+        if (j < (boardSize - 1) && !mineData[i][j + 1].isVisible) {
+            mineData[i][j + 1].isVisible = true;
+            if (mineData[i][j + 1].proximityNumber == 0) {
+                explodey(i, j + 1, boardSize, mineData);
+            }
+        }
+        if (i < (boardSize - 1) && j != 0  && !mineData[i + 1][j - 1].isVisible) {
+            mineData[i + 1][j - 1].isVisible = true;
+            if (mineData[i + 1][j - 1].proximityNumber == 0) {
+                explodey(i + 1, j - 1, boardSize, mineData);
+            }
+        }
+        if (i < (boardSize - 1) && !mineData[i + 1][j].isVisible) {
+            mineData[i + 1][j].isVisible = true;
+            if (mineData[i + 1][j].proximityNumber == 0) {
+                explodey(i + 1, j, boardSize, mineData);
+            }
+        }
+        if (i < (boardSize - 1) && j < (boardSize - 1) && !mineData[i + 1][j + 1].isVisible) {
+            mineData[i + 1][j + 1].isVisible = true;
+            if (mineData[i + 1][j + 1].proximityNumber == 0) {
+                explodey(i + 1, j + 1, boardSize, mineData);
+            }
+        }
+
+    }
+
+    public static void revealCells (int i, int j, int boardSize, SweeperCell[][] mineData)
+            // If the cell selected is a mine, all mines are revealed, and if not, it does the explodey thing.
+    {
+        mineData[i][j].isVisible = true;
+
+        // If the chosen cell contains a mine, display all mines
+        if (mineData[i][j].mine) {
+            for (int x = 0; x < boardSize - 1; x++) {
+                for (int y = 0; y < boardSize - 1; y++) {
+                    if (mineData[x][y].mine) {
+                        mineData[x][y].isVisible = true;
+                    }
+                }
+            }
+        }
+        // If it's blank, do the explodey thing.
+        else if (mineData[i][j].proximityNumber == 0)
+        {
+            explodey(i,j,boardSize,mineData);
+        }
+
+    }
+
+    public static String[][] displayArray(int boardSize, SweeperCell[][] mineData)
+            // Creates the array full of display strings
+    {
 
         // Create a 2d array to hold the display
         String [][] mineDisplay = new String [10][10];
@@ -113,39 +194,32 @@ public class Board
 
         for (int i = 0; i < boardSize; i++)
         {
-            boolean mine = false;
-
             for (int j = 0; j < boardSize; j++)
             {
-                mine = mineData[i][j].mine;
+                if (!mineData[i][j].isVisible)
+                {
+                    mineDisplay[i][j] = "*";
+                }
+                else {
 
-                if (mine)
-                {
-                    mineDisplay[i][j] = "X";
-                }
-                else if (mineData[i][j].proximityNumber != 0)
-                {
-                    mineDisplay[i][j] = String.valueOf(mineData[i][j].proximityNumber);
-                }
-                else
-                {
-                    mineDisplay[i][j] = "_";
+                    if (mineData[i][j].mine) {
+                        mineDisplay[i][j] = "X";
+                    } else if (mineData[i][j].proximityNumber != 0) {
+                        mineDisplay[i][j] = String.valueOf(mineData[i][j].proximityNumber);
+                    } else {
+                        mineDisplay[i][j] = "_";
+                    }
                 }
             }
         }
         return mineDisplay;
     }
 
-    public static void revealCells ()
-    {
-
-    }
-
-    public static void printBoard(int boardSize)
+    public static void printBoard(int boardSize, SweeperCell[][] mineData)
             // Takes the array full of strings and displays them in a grid format with index values on the axes
     {
-        String[][] mineDisplay = displayArray(boardSize);
-        System.out.print("  | ");
+        String[][] mineDisplay = displayArray(boardSize,mineData);
+        System.out.print("\n  | ");
 
         for(int i = 0; i < boardSize; i++)
         {
@@ -172,13 +246,72 @@ public class Board
 
             for (int j = 0; j < boardSize; j++)
             {
+
                 System.out.print(" " + mineDisplay[i][j] + " |");
+
+                if (j == boardSize - 1)
+                {
+                    if (i >= 9)
+                    {
+                        System.out.print(i + 1);
+                    }
+                    else
+                    {
+                        System.out.print(" " + (i + 1));
+                    }
+                }
+            }
+        }
+
+        System.out.print("\n  | ");
+
+        for(int i = 0; i < boardSize; i++)
+        {
+            if (i >= 9)
+            {
+                System.out.print((i + 1) + "| ");
+            }
+            else
+            {
+                System.out.print((i + 1) + " | ");
             }
         }
     }
 
     public static void gamePlay ()
     {
+        System.out.println("----------------MINESWEEPER----------------");
+
+        int boardSize = 10;
+
+        SweeperCell[][] mineData = addMines(boardSize);
+//        printBoard(boardSize,mineData);
+
+        int x;
+        int y;
+
+        while (true) {
+
+            printBoard(boardSize,mineData);
+
+            Scanner Reader = new Scanner(System.in);
+            System.out.print("\nEnter cell's x-coordinate: ");
+            y = Reader.nextInt() - 1;
+            System.out.print("Enter cell's y-coordinate: ");
+            x = Reader.nextInt() - 1;
+
+            revealCells(x, y, boardSize, mineData);
+//            printBoard(boardSize, mineData);
+
+            if (mineData[x][y].mine) {
+                System.out.println("BOOM! You lose :)");
+                break;
+            }
+
+
+        }
+//        System.out.println("[" + x + "," + y + "]");
+
 
     }
 }

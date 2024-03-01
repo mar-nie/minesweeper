@@ -1,16 +1,14 @@
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args)
     {
-        int boardSize = 10;
+//        int boardSize = 10;
 
-        Board.printBoard(boardSize);
+        Board.gamePlay();
 
-        Scanner Reader = new Scanner(System.in);
-        input = Reader.nextint();
+//        Scanner Reader = new Scanner(System.in);
+//        input = Reader.nextint();
 
     }
 }

@@ -15,5 +15,4 @@ public class SweeperCell {
         cellNumber = cell;
         isVisible = visible;
     }
-
 }
