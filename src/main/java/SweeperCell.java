@@ -1,11 +1,16 @@
 public class SweeperCell {
-    boolean mine;
-    int proximityNumber;
+    boolean mine;           // A true or false indicating if there is a mine in this cell
+    boolean flagged;        // A true or false indicating if the user has flagged that square
+    int proximityNumber;    // The number of mines within the 8 cells surrounding the current cell
+    int cellNumber;         // The unique integer number associated with this cell
 
-    public SweeperCell (boolean containsMine, int proximity)
+    // Constructor
+    public SweeperCell (boolean containsMine, boolean flag, int proximity, int cell)
     {
         mine = containsMine;
+        flagged = flag;
         proximityNumber = proximity;
+        cellNumber = cell;
     }
 
 }
