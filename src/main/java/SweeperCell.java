@@ -1,4 +1,6 @@
-public class SweeperCell {
+public class SweeperCell
+    // Class defines cell objects.
+{
     boolean mine;           // A true or false indicating if there is a mine in this cell
     boolean flagged;        // A true or false indicating if the user has flagged that square
     boolean isVisible;        // A true or false indicating if the contents of the cell are on display
