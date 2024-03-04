@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Board.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Minesweeper</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Board.java</span></div><h1>Board.java</h1><pre class="source lang-java linenums">import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+<span class="nc" id="L5">public class Board</span>
+{
+    // CREATE MINESWEEPER BOARD ----------------------------------------------------------------------------------------
+
+    public static SweeperCell[][] populateArray(int boardSize)
+            // Populates an array with cell objects
+    {
+        // Create a 2d array to be filled with mine cell class objects
+        SweeperCell[][] arr;
+<span class="nc" id="L14">        arr = new SweeperCell[boardSize][boardSize];</span>
+
+<span class="nc" id="L16">        int cellNo = 1; // Initializing cell number counter</span>
+
+        // POPULATING
+        // Filling the board with cell objects
+
+        // Iterating through all cells on the board
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        for (int i = 0; i &lt; boardSize; i++)</span>
+        {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">            for (int j = 0; j &lt; boardSize; j++)</span>
+            {
+                // Assign a cell object with default attributes to each coordinate
+<span class="nc" id="L27">                arr[i][j] = new SweeperCell(false, false, false,0, cellNo);</span>
+
+                // Add one to cell counter
+<span class="nc" id="L30">                cellNo++;</span>
+            }
+        }
+<span class="nc" id="L33">        return arr;</span>
+    }
+
+    public static SweeperCell[][] addMines(int boardSize, int noMines)
+            // Adds mines to the hidden array
+    {
+<span class="nc" id="L39">        SweeperCell[][] cellArray = populateArray(boardSize);</span>
+
+        // MINES
+        // - Create an ArrayList of random numbers equal to BoardSize - these will be the mines
+<span class="nc" id="L43">        ArrayList&lt;Integer&gt; randoms = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        for (int i = 0; i &lt; noMines; i++)</span>
+        {
+<span class="nc" id="L47">            boolean duplicate = true;</span>
+
+            // If the random number generated already exists in the array, generate a new one until a unique number is found.
+            do
+            {
+<span class="nc" id="L52">                int random = (int)(Math.random() * (boardSize * boardSize) + 1);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (!randoms.contains(random))</span>
+                {
+<span class="nc" id="L55">                    randoms.add(random);</span>
+<span class="nc" id="L56">                    duplicate = false;</span>
+                }
+
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            } while(duplicate);</span>
+        }
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (int i = 0; i &lt; boardSize; i++)</span>
+        {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            for (int j = 0; j &lt; boardSize; j++)</span>
+            {
+                // Iterate through all random numbers in array to check if any match the current cell number
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                for (int k = 0; k &lt; noMines; k++)</span>
+                {
+                    // If one of the random numbers generated above matches the current cell number
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                    if (randoms.get(k) == cellArray[i][j].cellNumber)</span>
+                    {
+                        // Add a mine to this location
+<span class="nc" id="L73">                        cellArray[i][j].mine = true;</span>
+
+                        // Increment proximityNumber of all surrounding cells by 1
+                        // (Accounting for out of bounds index values)
+<span class="nc bnc" id="L77" title="All 4 branches missed.">                        if (i != 0 &amp;&amp; j !=0) {</span>
+<span class="nc" id="L78">                            cellArray[i - 1][j - 1].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                        if (i != 0) {</span>
+<span class="nc" id="L81">                            cellArray[i - 1][j].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L83" title="All 4 branches missed.">                        if (i != 0 &amp;&amp; j &lt; (boardSize - 1)) {</span>
+<span class="nc" id="L84">                            cellArray[i - 1][j + 1].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                        if (j != 0) {</span>
+<span class="nc" id="L87">                            cellArray[i][j - 1].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                        if (j &lt; (boardSize - 1)) {</span>
+<span class="nc" id="L90">                            cellArray[i][j + 1].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L92" title="All 4 branches missed.">                        if (i &lt; (boardSize - 1) &amp;&amp; j != 0) {</span>
+<span class="nc" id="L93">                            cellArray[i + 1][j - 1].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                        if (i &lt; (boardSize - 1)) {</span>
+<span class="nc" id="L96">                            cellArray[i + 1][j].proximityNumber++;</span>
+                        }
+<span class="nc bnc" id="L98" title="All 4 branches missed.">                        if (i &lt; (boardSize - 1) &amp;&amp; j &lt; (boardSize - 1)) {</span>
+<span class="nc" id="L99">                            cellArray[i + 1][j + 1].proximityNumber++;</span>
+                        }
+
+                    }
+                }
+            }
+        }
+
+<span class="nc" id="L107">        return cellArray;</span>
+    }
+
+    public static void revealCells (int i, int j, int boardSize, SweeperCell[][] mineData)
+    // If the cell selected is a mine, all mines are revealed, and if not, it does the explodey thing.
+    {
+<span class="nc" id="L113">        mineData[i][j].isVisible = true;</span>
+
+        // If the chosen cell contains a mine, display all mines
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (mineData[i][j].mine) {</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            for (int x = 0; x &lt; boardSize; x++) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                for (int y = 0; y &lt; boardSize; y++) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                    if (mineData[x][y].mine) {</span>
+<span class="nc" id="L120">                        mineData[x][y].isVisible = true;</span>
+                    }
+                }
+            }
+        }
+        // If it's blank, do the explodey thing.
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        else if (mineData[i][j].proximityNumber == 0)</span>
+        {
+<span class="nc" id="L128">            explodey(i,j,boardSize,mineData);</span>
+        }
+
+<span class="nc" id="L131">    }</span>
+
+    public static void explodey (int i, int j, int  boardSize, SweeperCell[][] mineData)
+            // Checks all surrounding cells to see if they are already visible or out of bounds, if they are neither,
+            // it makes those cells visible, and for each newly visible cell it repeats the same cycle recursively
+            // and stops when it reveals a numbered square or the edge of the grid.
+    {
+
+<span class="nc bnc" id="L139" title="All 6 branches missed.">        if (i != 0 &amp;&amp; j != 0 &amp;&amp; !mineData[i - 1][j - 1].isVisible) {</span>
+<span class="nc" id="L140">            mineData[i - 1][j - 1].isVisible = true;</span>
+<span class="nc" id="L141">            mineData[i - 1][j - 1].flagged = false;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (mineData[i - 1][j - 1].proximityNumber == 0) {</span>
+<span class="nc" id="L143">                explodey(i - 1,j - 1,boardSize,mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L146" title="All 6 branches missed.">        if (i != 0 &amp;&amp; j != 0 &amp;&amp; !mineData[i - 1][j].isVisible) {</span>
+<span class="nc" id="L147">            mineData[i - 1][j].isVisible = true;</span>
+<span class="nc" id="L148">            mineData[i - 1][j].flagged = false;</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            if (mineData[i - 1][j].proximityNumber == 0) {</span>
+<span class="nc" id="L150">                explodey(i - 1, j, boardSize, mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L153" title="All 6 branches missed.">        if (i != 0 &amp;&amp; j &lt; (boardSize - 1) &amp;&amp; !mineData[i - 1][j + 1].isVisible) {</span>
+<span class="nc" id="L154">            mineData[i - 1][j + 1].isVisible = true;</span>
+<span class="nc" id="L155">            mineData[i - 1][j + 1].flagged = false;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            if (mineData[i - 1][j + 1].proximityNumber == 0) {</span>
+<span class="nc" id="L157">                explodey(i - 1, j + 1, boardSize, mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        if (j != 0  &amp;&amp; !mineData[i][j - 1].isVisible) {</span>
+<span class="nc" id="L161">            mineData[i][j - 1].isVisible = true;</span>
+<span class="nc" id="L162">            mineData[i][j - 1].isVisible = false;</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            if (mineData[i][j - 1].proximityNumber == 0) {</span>
+<span class="nc" id="L164">                explodey(i, j - 1, boardSize, mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L167" title="All 4 branches missed.">        if (j &lt; (boardSize - 1) &amp;&amp; !mineData[i][j + 1].isVisible) {</span>
+<span class="nc" id="L168">            mineData[i][j + 1].isVisible = true;</span>
+<span class="nc" id="L169">            mineData[i][j + 1].flagged = false;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">            if (mineData[i][j + 1].proximityNumber == 0) {</span>
+<span class="nc" id="L171">                explodey(i, j + 1, boardSize, mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L174" title="All 6 branches missed.">        if (i &lt; (boardSize - 1) &amp;&amp; j != 0  &amp;&amp; !mineData[i + 1][j - 1].isVisible) {</span>
+<span class="nc" id="L175">            mineData[i + 1][j - 1].isVisible = true;</span>
+<span class="nc" id="L176">            mineData[i + 1][j - 1].flagged = false;</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (mineData[i + 1][j - 1].proximityNumber == 0) {</span>
+<span class="nc" id="L178">                explodey(i + 1, j - 1, boardSize, mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L181" title="All 4 branches missed.">        if (i &lt; (boardSize - 1) &amp;&amp; !mineData[i + 1][j].isVisible) {</span>
+<span class="nc" id="L182">            mineData[i + 1][j].isVisible = true;</span>
+<span class="nc" id="L183">            mineData[i + 1][j].flagged = false;</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            if (mineData[i + 1][j].proximityNumber == 0) {</span>
+<span class="nc" id="L185">                explodey(i + 1, j, boardSize, mineData);</span>
+            }
+        }
+<span class="nc bnc" id="L188" title="All 6 branches missed.">        if (i &lt; (boardSize - 1) &amp;&amp; j &lt; (boardSize - 1) &amp;&amp; !mineData[i + 1][j + 1].isVisible) {</span>
+<span class="nc" id="L189">            mineData[i + 1][j + 1].isVisible = true;</span>
+<span class="nc" id="L190">            mineData[i + 1][j + 1].flagged = false;</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            if (mineData[i + 1][j + 1].proximityNumber == 0) {</span>
+<span class="nc" id="L192">                explodey(i + 1, j + 1, boardSize, mineData);</span>
+            }
+        }
+
+<span class="nc" id="L196">    }</span>
+
+    public static String[][] displayArray(int boardSize, SweeperCell[][] mineData)
+            // Creates the array full of display strings
+    {
+
+        // Create a 2d array to hold the display
+<span class="nc" id="L203">        String [][] mineDisplay = new String [boardSize][boardSize];</span>
+
+        // Iterate through every cell in the data board
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        for (int i = 0; i &lt; boardSize; i++)</span>
+        {
+<span class="nc bnc" id="L208" title="All 2 branches missed.">            for (int j = 0; j &lt; boardSize; j++)</span>
+            {
+                // If the cell has not been revealed yet, display a *
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                if (!mineData[i][j].isVisible)</span>
+                {
+<span class="nc" id="L213">                    mineDisplay[i][j] = &quot;*&quot;;</span>
+                }
+                else
+                {
+                    // If the cell is a mine, display an X
+<span class="nc bnc" id="L218" title="All 2 branches missed.">                    if (mineData[i][j].mine) {</span>
+<span class="nc" id="L219">                        mineDisplay[i][j] = &quot;X&quot;;</span>
+                    }
+                    // If the cell is a proximity number, display that number
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                    else if (mineData[i][j].proximityNumber != 0)</span>
+                    {
+<span class="nc" id="L224">                        mineDisplay[i][j] = String.valueOf(mineData[i][j].proximityNumber);</span>
+                    }
+                    // If the cell is blank, display a _
+                    else
+                    {
+<span class="nc" id="L229">                        mineDisplay[i][j] = &quot;_&quot;;</span>
+                    }
+                }
+                // If the user has flagged the cell, display an F
+<span class="nc bnc" id="L233" title="All 2 branches missed.">                if (mineData[i][j].flagged)</span>
+                {
+<span class="nc" id="L235">                    mineDisplay[i][j] = &quot;F&quot;;</span>
+                }
+            }
+        }
+<span class="nc" id="L239">        return mineDisplay;</span>
+    }
+
+    public static void printBoard(int boardSize, SweeperCell[][] mineData)
+            // Takes the array full of strings and displays them in a grid format with index values on the axes
+    {
+<span class="nc" id="L245">        String[][] mineDisplay = displayArray(boardSize,mineData);</span>
+<span class="nc" id="L246">        System.out.print(&quot;\n  | &quot;);</span>
+
+        // Print x-axis on top of grid
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        for(int i = 0; i &lt; boardSize; i++)</span>
+        {
+<span class="nc bnc" id="L251" title="All 2 branches missed.">            if (i &gt;= 9)</span>
+            {
+<span class="nc" id="L253">                System.out.print((i + 1) + &quot;| &quot;);</span>
+            }
+            else
+            {
+<span class="nc" id="L257">                System.out.print((i + 1) + &quot; | &quot;);</span>
+            }
+        }
+
+
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        for (int i = 0; i &lt; boardSize; i++)</span>
+        {
+            // Print y-axis label before grid
+<span class="nc bnc" id="L265" title="All 2 branches missed.">            if (i &gt;= 9)</span>
+            {
+<span class="nc" id="L267">                System.out.print(&quot;\n&quot; + (i + 1) + &quot;|&quot;);</span>
+            }
+            else
+            {
+<span class="nc" id="L271">                System.out.print(&quot;\n&quot; + (i + 1) + &quot; |&quot;);</span>
+            }
+
+<span class="nc bnc" id="L274" title="All 2 branches missed.">            for (int j = 0; j &lt; boardSize; j++)</span>
+            {
+                // Print display grid
+<span class="nc" id="L277">                System.out.print(&quot; &quot; + mineDisplay[i][j] + &quot; |&quot;);</span>
+
+                // Print y-axis label after grid
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                if (j == boardSize - 1)</span>
+                {
+<span class="nc bnc" id="L282" title="All 2 branches missed.">                    if (i &gt;= 9)</span>
+                    {
+<span class="nc" id="L284">                        System.out.print(i + 1);</span>
+                    }
+                    else
+                    {
+<span class="nc" id="L288">                        System.out.print(&quot; &quot; + (i + 1));</span>
+                    }
+                }
+            }
+        }
+
+        // Print x-axis below grid
+<span class="nc" id="L295">        System.out.print(&quot;\n  | &quot;);</span>
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        for(int i = 0; i &lt; boardSize; i++)</span>
+        {
+<span class="nc bnc" id="L299" title="All 2 branches missed.">            if (i &gt;= 9)</span>
+            {
+<span class="nc" id="L301">                System.out.print((i + 1) + &quot;| &quot;);</span>
+            }
+            else
+            {
+<span class="nc" id="L305">                System.out.print((i + 1) + &quot; | &quot;);</span>
+            }
+        }
+<span class="nc" id="L308">    }</span>
+
+
+    // MAIN MENU AND GAME SET-UP ---------------------------------------------------------------------------------------
+
+    public static void mainMenu ()
+            // Takes user difficulty input and produces the game, then they either win or lose, it asks if they would
+            // like to play again or end the program.
+    {
+<span class="nc" id="L317">        boolean playing = true;</span>
+
+<span class="nc" id="L319">        int noMines = 0;        // Initialise number of mines variable</span>
+<span class="nc" id="L320">        int boardSize = 0;      // Initialise board size variable</span>
+
+<span class="nc" id="L322">        System.out.println(&quot;-----------------MINESWEEPER-----------------&quot;);</span>
+
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        while (playing)</span>
+        {
+
+            // User chooses their difficulty level from a menu
+<span class="nc" id="L328">            int choice = chooseDifficulty();</span>
+
+            // If the user chooses easy mode:
+<span class="nc bnc" id="L331" title="All 2 branches missed.">            if (choice == 1) {</span>
+<span class="nc" id="L332">                boardSize = 10;</span>
+<span class="nc" id="L333">                noMines = 10;</span>
+<span class="nc" id="L334">                System.out.print(&quot;--------------------EASY---------------------&quot;);</span>
+            }
+            // If the user chooses medium mode:
+<span class="nc bnc" id="L337" title="All 2 branches missed.">            else if (choice == 2) {</span>
+<span class="nc" id="L338">                boardSize = 16;</span>
+<span class="nc" id="L339">                noMines = 40;</span>
+<span class="nc" id="L340">                System.out.print(&quot;-------------------------------MEDIUM--------------------------------&quot;);</span>
+            }
+            // If the user chooses hard mode:
+<span class="nc bnc" id="L343" title="All 2 branches missed.">            else if (choice == 3) {</span>
+<span class="nc" id="L344">                boardSize = 20;</span>
+<span class="nc" id="L345">                noMines = 99;</span>
+<span class="nc" id="L346">                System.out.print(&quot;----------------------------------------HARD-----------------------------------------&quot;);</span>
+            }
+            // If the user chooses to create a custom game:
+<span class="nc bnc" id="L349" title="All 2 branches missed.">            else if (choice == 4) {</span>
+<span class="nc" id="L350">                System.out.println(&quot;-----------------CUSTOM BOARD----------------&quot;);</span>
+<span class="nc" id="L351">                boardSize = customBoard();</span>
+<span class="nc" id="L352">                noMines = customMine(boardSize);</span>
+<span class="nc" id="L353">                System.out.println(&quot;-----------------CUSTOM BOARD----------------&quot;);</span>
+            }
+
+<span class="nc" id="L356">            gamePlay(boardSize, noMines);</span>
+
+<span class="nc" id="L358">            System.out.print(&quot;Would you like to play another game of minesweeper?\n&quot;);</span>
+<span class="nc" id="L359">            playing = yesNoAsk();</span>
+
+<span class="nc" id="L361">        }</span>
+<span class="nc" id="L362">    }</span>
+
+    public static int chooseDifficulty ()
+            // Displays a selection of difficulty choices and prompts the user to select one, or lets the user choose
+            // if they would like to enter a custom difficulty.
+    {
+<span class="nc" id="L368">        Scanner Reader = new Scanner(System.in);</span>
+
+<span class="nc" id="L370">        System.out.print(&quot;&quot;&quot;</span>
+                Welcome to Minesweeper!
+                What difficulty would you like to play on?
+                1. Easy     (10 x 10, 10 mines)
+                2. Medium   (16 x 16, 40 mines)
+                3. Hard     (20 x 20, 99 mines)
+                4. Custom&quot;&quot;&quot;);
+
+
+        int input;
+        while (true)
+        {
+<span class="nc" id="L382">            System.out.print(&quot;\n: &quot;);</span>
+
+            try {
+<span class="nc" id="L385">                input = Reader.nextInt();</span>
+
+<span class="nc bnc" id="L387" title="All 4 branches missed.">                if (input &lt;= 0 || input &gt; 4)</span>
+                {
+<span class="nc" id="L389">                    System.out.print(&quot;Error, please enter a number from 1 to 4.&quot;);</span>
+                }
+                else
+                {
+<span class="nc" id="L393">                    break;</span>
+                }
+            }
+<span class="nc" id="L396">            catch (InputMismatchException x)</span>
+            {
+<span class="nc" id="L398">                System.out.print(&quot;Error, please enter a number from 1 to 4.&quot;);</span>
+<span class="nc" id="L399">                Reader.next();</span>
+<span class="nc" id="L400">            }</span>
+        }
+<span class="nc" id="L402">        return input;</span>
+    }
+
+    public static int customBoard ()
+            // Asks the user how wide they would like their minesweeper board to be, if the number is higher than 40,
+            // it presents an error and asks for input again.
+    {
+<span class="nc" id="L409">        Scanner Reader = new Scanner(System.in);</span>
+<span class="nc" id="L410">        System.out.print(&quot;How wide would you like your board to be? (1-40)\n&quot;);</span>
+
+        int input;
+        while (true)
+        {
+<span class="nc" id="L415">            System.out.print(&quot;: &quot;);</span>
+
+            try {
+<span class="nc" id="L418">                input = Reader.nextInt();</span>
+
+<span class="nc bnc" id="L420" title="All 2 branches missed.">                if (input &lt;= 0)</span>
+                {
+<span class="nc" id="L422">                    System.out.print(&quot;Sadly, you will need at least once cell in your board, please try again.\n&quot;);</span>
+                }
+                // 40 Is the maximum width that is reasonably viewable in the console.
+<span class="nc bnc" id="L425" title="All 2 branches missed.">                else if (input &gt; 40)</span>
+                {
+<span class="nc" id="L427">                    System.out.print(&quot;This board size is too large to be fully viewable, please try again.\n&quot;);</span>
+                }
+
+                else
+                {
+<span class="nc" id="L432">                    break;</span>
+                }
+            }
+<span class="nc" id="L435">            catch (InputMismatchException x)</span>
+            {
+<span class="nc" id="L437">                System.out.print(&quot;Error, please enter a number from 1 to 4.&quot;);</span>
+<span class="nc" id="L438">                Reader.next();</span>
+<span class="nc" id="L439">            }</span>
+        }
+
+<span class="nc" id="L442">        return input;</span>
+    }
+
+    public static int customMine (int boardSize)
+            // Asks the user for the number of mines they would like on the board. If the number they enter is 0 or
+            // higher than the total number of cells on the board, it prompts them to enter again.
+    {
+<span class="nc" id="L449">        Scanner Reader = new Scanner(System.in);</span>
+<span class="nc" id="L450">        System.out.print(&quot;How many mines do you want?\n&quot;);</span>
+        int input;
+        while (true)
+        {
+<span class="nc" id="L454">            System.out.print(&quot;: &quot;);</span>
+
+            try {
+<span class="nc" id="L457">                input = Reader.nextInt();</span>
+
+<span class="nc bnc" id="L459" title="All 2 branches missed.">                if (input &lt;= 0)</span>
+                {
+<span class="nc" id="L461">                    System.out.println(&quot;Sadly, you will need at least one mine to make this a fair game, try again.&quot;);</span>
+                }
+<span class="nc bnc" id="L463" title="All 2 branches missed.">                else if (input &gt;= boardSize * boardSize)</span>
+                {
+<span class="nc" id="L465">                    System.out.println(&quot;That is way too many mines, try less than &quot; + boardSize * boardSize + &quot; mines.&quot;);</span>
+                }
+                else
+                {
+<span class="nc" id="L469">                    break;</span>
+                }
+            }
+<span class="nc" id="L472">            catch (InputMismatchException x)</span>
+            {
+<span class="nc" id="L474">                System.out.println(&quot;Error, please enter a number from 1 to &quot; + (boardSize * boardSize - 1) + &quot;.&quot;);</span>
+<span class="nc" id="L475">                Reader.next();</span>
+<span class="nc" id="L476">            }</span>
+        }
+
+<span class="nc" id="L479">        return input;</span>
+    }
+
+    public static boolean yesNoAsk ()
+            // Asks the user a yes or no question by entering 1 or 0, and returns a boolean.
+    {
+<span class="nc" id="L485">        boolean yesNoIng = true;    // While loop boolean flag</span>
+<span class="nc" id="L486">        boolean complete = false;   // Return variable</span>
+<span class="nc" id="L487">        int yesNo = 0;              // Initialise input variable</span>
+
+<span class="nc bnc" id="L489" title="All 2 branches missed.">        while (yesNoIng)</span>
+        {
+<span class="nc" id="L491">            Scanner Reader = new Scanner(System.in);</span>
+<span class="nc" id="L492">            System.out.println(&quot;Enter 1 for yes or 0 for no:&quot;);</span>
+
+<span class="nc" id="L494">            boolean success = true; // Current Java sub for try/except/else</span>
+
+            try
+            {
+<span class="nc" id="L498">                yesNo = Reader.nextInt();</span>
+            }
+<span class="nc" id="L500">            catch (InputMismatchException e)</span>
+            {
+<span class="nc" id="L502">                System.out.println(&quot;Error: Please enter a number, either 1 or 0.&quot;);</span>
+<span class="nc" id="L503">                success = false;</span>
+<span class="nc" id="L504">            }</span>
+<span class="nc bnc" id="L505" title="All 2 branches missed.">            if (success)</span>
+            {
+<span class="nc bnc" id="L507" title="All 2 branches missed.">                if (yesNo == 0)</span>
+                {
+<span class="nc" id="L509">                    yesNoIng = false;   // Ends the loop</span>
+                }
+<span class="nc bnc" id="L511" title="All 2 branches missed.">                else if (yesNo == 1)    // Ends the loop</span>
+                {
+<span class="nc" id="L513">                    yesNoIng = false;</span>
+<span class="nc" id="L514">                    complete = true;    //  Method returns true</span>
+                }
+                else
+                {
+<span class="nc" id="L518">                    System.out.println(&quot;Error: Please enter either 1 or 0.&quot;);</span>
+                }
+            }
+<span class="nc" id="L521">        }</span>
+<span class="nc" id="L522">        return complete;    // Returns true if yes, false if no</span>
+    }
+
+    // GAMEPLAY --------------------------------------------------------------------------------------------------------
+
+    public static void gamePlay(int boardSize, int noMines)
+            // Main gameplay loop.
+    {
+        // Create new game board based on specifications.
+<span class="nc" id="L531">        SweeperCell[][] mineData = addMines(boardSize,noMines);</span>
+
+        int x;                      // Initialise x-coordinate
+        int y;                      // Initialise y-coordinate
+<span class="nc" id="L535">        boolean loseWin = false;    // Initialise lose/win condition</span>
+
+<span class="nc bnc" id="L537" title="All 2 branches missed.">        while (!loseWin)</span>
+        {
+            while (true)
+            {
+<span class="nc" id="L541">                printBoard(boardSize, mineData);</span>
+
+                // User chooses from a menu every turn, and selects whether to flag, un-flag, or reveal a cell.
+<span class="nc" id="L544">                int choice = flagOrReveal();</span>
+
+                // If they choose to flag a cell, they input its coordinates.
+<span class="nc bnc" id="L547" title="All 2 branches missed.">                if (choice == 2) {</span>
+<span class="nc" id="L548">                    System.out.print(&quot;Enter cell's x-coordinate: &quot;);</span>
+<span class="nc" id="L549">                    int yFlag = intInputValidate(boardSize);</span>
+<span class="nc" id="L550">                    System.out.print(&quot;Enter cell's y-coordinate: &quot;);</span>
+<span class="nc" id="L551">                    int xFlag = intInputValidate(boardSize);</span>
+
+<span class="nc" id="L553">                    mineData[xFlag][yFlag].flagged = true;</span>
+
+<span class="nc" id="L555">                    continue;</span>
+                }
+                // If they choose to un-flag a cell, they input its coordinates.
+<span class="nc bnc" id="L558" title="All 2 branches missed.">                if (choice == 3)</span>
+                {
+<span class="nc" id="L560">                    System.out.print(&quot;Enter cell's x-coordinate: &quot;);</span>
+<span class="nc" id="L561">                    int yFlag = intInputValidate(boardSize);</span>
+<span class="nc" id="L562">                    System.out.print(&quot;Enter cell's y-coordinate: &quot;);</span>
+<span class="nc" id="L563">                    int xFlag = intInputValidate(boardSize);</span>
+
+<span class="nc" id="L565">                    mineData[xFlag][yFlag].flagged = false;</span>
+                }
+                // If they choose to reveal a cell, we exit the inner menu loop to make the next move in the game.
+                else
+                {
+                    break;
+                }
+<span class="nc" id="L572">            }</span>
+
+            // User inputs coordinates to reveal the next cell.
+<span class="nc" id="L575">            System.out.print(&quot;Enter cell's x-coordinate: &quot;);</span>
+<span class="nc" id="L576">            y = intInputValidate(boardSize);</span>
+<span class="nc" id="L577">            System.out.print(&quot;Enter cell's y-coordinate: &quot;);</span>
+<span class="nc" id="L578">            x = intInputValidate(boardSize);</span>
+
+<span class="nc" id="L580">            revealCells(x, y, boardSize, mineData);</span>
+
+            // Checks to see if the user has won or lost.
+<span class="nc" id="L583">            loseWin = loseWinCondition(x, y, boardSize, noMines, mineData);</span>
+
+        }
+<span class="nc" id="L586">    }</span>
+
+    public static int flagOrReveal ()
+            // This displays a menu offering the user of they want to reveal, flag, or un-flag a cell.
+            // Receives, validates, and outputs a user chosen integer of either 1, 2 or 3.
+    {
+<span class="nc" id="L592">        Scanner Reader = new Scanner(System.in);</span>
+
+<span class="nc" id="L594">        System.out.print(&quot;&quot;&quot;</span>
+                    \n1. Reveal Cell
+                    2. Flag Cell
+                    3. Remove Flag
+                    Enter 1, 2 or 3 to choose.&quot;&quot;&quot;);
+
+        int input;
+        while (true)
+        {
+<span class="nc" id="L603">            System.out.print(&quot;\n: &quot;);</span>
+
+            try {
+<span class="nc" id="L606">                input = Reader.nextInt();</span>
+
+<span class="nc bnc" id="L608" title="All 4 branches missed.">                if (input &lt;= 0 || input &gt; 3)</span>
+                {
+<span class="nc" id="L610">                    System.out.print(&quot;Error, please enter 1, 2 or 3.&quot;);</span>
+                }
+                else
+                {
+<span class="nc" id="L614">                    break;</span>
+                }
+            }
+<span class="nc" id="L617">            catch (InputMismatchException x)</span>
+            {
+<span class="nc" id="L619">                System.out.print(&quot;Error, please enter 1, 2 or 3.&quot;);</span>
+<span class="nc" id="L620">                Reader.next();</span>
+<span class="nc" id="L621">            }</span>
+        }
+<span class="nc" id="L623">        return input;</span>
+    }
+
+    public static int intInputValidate (int boardSize)
+            // Receives, validates and returns numerical co-ordinate input to receive a positive number within the
+            // range of the game board as an integer.
+    {
+<span class="nc" id="L630">        int input = 0;    // Initialise input variable</span>
+
+        while (true)
+        {
+<span class="nc" id="L634">            Scanner Reader = new Scanner(System.in);</span>
+
+<span class="nc" id="L636">            boolean success = true; // Current Java sub for try/except/else</span>
+
+            try
+            {
+<span class="nc" id="L640">                input = Reader.nextInt() - 1; // Test if the input is a number</span>
+            }
+<span class="nc" id="L642">            catch (InputMismatchException x)</span>
+            {
+<span class="nc" id="L644">                System.out.print(&quot;Error: Please enter a number in range 1 - &quot; + boardSize + &quot;\n: &quot;);</span>
+<span class="nc" id="L645">                success = false;</span>
+<span class="nc" id="L646">            }</span>
+<span class="nc bnc" id="L647" title="All 2 branches missed.">            if (success)</span>
+            {
+<span class="nc bnc" id="L649" title="All 2 branches missed.">                if (input &gt;= 0) // Test if the number is positive</span>
+                {
+<span class="nc bnc" id="L651" title="All 2 branches missed.">                    if (input &lt;= boardSize)</span>
+                    {
+<span class="nc" id="L653">                        break;</span>
+                    }
+                    else
+                    {
+<span class="nc" id="L657">                        System.out.print(&quot;Error: Please enter a number in range 1 - &quot; + boardSize + &quot;\n: &quot;);</span>
+                    }
+                }
+                else
+                {
+<span class="nc" id="L662">                    System.out.print(&quot;Error: Please enter a number in range 1 - &quot; + boardSize + &quot;\n: &quot;);</span>
+                }
+            }
+<span class="nc" id="L665">        }</span>
+<span class="nc" id="L666">        return input; // Return clean user input as a positive integer.</span>
+    }
+
+    public static boolean loseWinCondition (int x, int y, int boardSize, int noMines, SweeperCell[][] mineData)
+            // Checks if the user has just won or lost the game and returns true if they have.
+    {
+<span class="nc bnc" id="L672" title="All 2 branches missed.">        if (mineData[x][y].mine)</span>
+        {
+<span class="nc" id="L674">            printBoard(boardSize, mineData);</span>
+<span class="nc" id="L675">            System.out.println(&quot;\n------------------GAME OVER------------------&quot;);</span>
+<span class="nc" id="L676">            return true;</span>
+        }
+
+<span class="nc" id="L679">        int counter = 0;        // Initialise counter to count total visible cells</span>
+
+<span class="nc bnc" id="L681" title="All 2 branches missed.">        for (int i = 0; i &lt; boardSize; i++)</span>
+        {
+<span class="nc bnc" id="L683" title="All 2 branches missed.">            for (int j = 0; j &lt; boardSize; j++)</span>
+            {
+<span class="nc bnc" id="L685" title="All 2 branches missed.">                if (mineData[i][j].isVisible)</span>
+                {
+<span class="nc" id="L687">                    counter++;</span>
+                }
+            }
+        }
+
+        // If the total number of visible cells == the total number of cells minus the number of cells with mines,
+        // The user has won the game.
+<span class="nc bnc" id="L694" title="All 2 branches missed.">        if (counter == (boardSize * boardSize - noMines))</span>
+        {
+<span class="nc" id="L696">            printBoard(boardSize, mineData);</span>
+<span class="nc" id="L697">            System.out.println(&quot;\n-------------------YOU WIN-------------------&quot;);</span>
+<span class="nc" id="L698">            return true;</span>
+        }
+
+        // If neither condition has been met, return true to continue the game.
+<span class="nc" id="L702">        return false;</span>
+    }
+
+    // TESTING ---------------------------------------------------------------------------------------------------------
+
+//    public static boolean isNumberEven(int number)
+//    {
+//
+//    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

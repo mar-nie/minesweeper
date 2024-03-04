@@ -17,4 +17,10 @@ public class SweeperCell
         cellNumber = cell;
         isVisible = visible;
     }
+
+    public static SweeperCell SweeperCellInit()
+    {
+        SweeperCell newCell = new SweeperCell(false,false,false,0,0);
+        return newCell;
+    }
 }
