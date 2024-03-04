@@ -355,15 +355,15 @@ public class Board
 
             gamePlay(boardSize, noMines);
 
-            System.out.print("Would you like to play another game of minesweeper?");
+            System.out.print("Would you like to play another game of minesweeper?\n");
             playing = yesNoAsk();
 
         }
     }
 
     public static int chooseDifficulty ()
-    // Displays a selection of difficulty choices and prompts the user to select one, or lets the user choose
-    // if they would like to enter a custom difficulty.
+            // Displays a selection of difficulty choices and prompts the user to select one, or lets the user choose
+            // if they would like to enter a custom difficulty.
     {
         Scanner Reader = new Scanner(System.in);
 
@@ -403,11 +403,11 @@ public class Board
     }
 
     public static int customBoard ()
-    // Asks the user how wide they would like their minesweeper board to be, if the number is higher than 40,
-    // it presents an error and asks for input again.
+            // Asks the user how wide they would like their minesweeper board to be, if the number is higher than 40,
+            // it presents an error and asks for input again.
     {
         Scanner Reader = new Scanner(System.in);
-        System.out.print("How wide would you like your board to be?\n");
+        System.out.print("How wide would you like your board to be? (1-40)\n");
 
         int input;
         while (true)
@@ -443,8 +443,8 @@ public class Board
     }
 
     public static int customMine (int boardSize)
-    // Asks the user for the number of mines they would like on the board. If the number they enter is 0 or
-    // higher than the total number of cells on the board, it prompts them to enter again.
+            // Asks the user for the number of mines they would like on the board. If the number they enter is 0 or
+            // higher than the total number of cells on the board, it prompts them to enter again.
     {
         Scanner Reader = new Scanner(System.in);
         System.out.print("How many mines do you want?\n");
@@ -480,7 +480,7 @@ public class Board
     }
 
     public static boolean yesNoAsk ()
-    // Asks the user a yes or no question by entering 1 or 0, and returns a boolean.
+            // Asks the user a yes or no question by entering 1 or 0, and returns a boolean.
     {
         boolean yesNoIng = true;    // While loop boolean flag
         boolean complete = false;   // Return variable
