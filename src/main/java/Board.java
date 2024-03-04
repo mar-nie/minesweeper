@@ -107,6 +107,29 @@ public class Board
         return cellArray;
     }
 
+    public static void revealCells (int i, int j, int boardSize, SweeperCell[][] mineData)
+    // If the cell selected is a mine, all mines are revealed, and if not, it does the explodey thing.
+    {
+        mineData[i][j].isVisible = true;
+
+        // If the chosen cell contains a mine, display all mines
+        if (mineData[i][j].mine) {
+            for (int x = 0; x < boardSize; x++) {
+                for (int y = 0; y < boardSize; y++) {
+                    if (mineData[x][y].mine) {
+                        mineData[x][y].isVisible = true;
+                    }
+                }
+            }
+        }
+        // If it's blank, do the explodey thing.
+        else if (mineData[i][j].proximityNumber == 0)
+        {
+            explodey(i,j,boardSize,mineData);
+        }
+
+    }
+
     public static void explodey (int i, int j, int  boardSize, SweeperCell[][] mineData)
             // Checks all surrounding cells to see if they are already visible or out of bounds, if they are neither,
             // it makes those cells visible, and for each newly visible cell it repeats the same cycle recursively
@@ -168,29 +191,6 @@ public class Board
             if (mineData[i + 1][j + 1].proximityNumber == 0) {
                 explodey(i + 1, j + 1, boardSize, mineData);
             }
-        }
-
-    }
-
-    public static void revealCells (int i, int j, int boardSize, SweeperCell[][] mineData)
-            // If the cell selected is a mine, all mines are revealed, and if not, it does the explodey thing.
-    {
-        mineData[i][j].isVisible = true;
-
-        // If the chosen cell contains a mine, display all mines
-        if (mineData[i][j].mine) {
-            for (int x = 0; x < boardSize; x++) {
-                for (int y = 0; y < boardSize; y++) {
-                    if (mineData[x][y].mine) {
-                        mineData[x][y].isVisible = true;
-                    }
-                }
-            }
-        }
-        // If it's blank, do the explodey thing.
-        else if (mineData[i][j].proximityNumber == 0)
-        {
-            explodey(i,j,boardSize,mineData);
         }
 
     }
