@@ -202,26 +202,34 @@ public class Board
         // Create a 2d array to hold the display
         String [][] mineDisplay = new String [boardSize][boardSize];
 
-
+        // Iterate through every cell in the data board
         for (int i = 0; i < boardSize; i++)
         {
             for (int j = 0; j < boardSize; j++)
             {
+                // If the cell has not been revealed yet, display a *
                 if (!mineData[i][j].isVisible)
                 {
                     mineDisplay[i][j] = "*";
                 }
                 else
                 {
-
+                    // If the cell is a mine, display an X
                     if (mineData[i][j].mine) {
                         mineDisplay[i][j] = "X";
-                    } else if (mineData[i][j].proximityNumber != 0) {
+                    }
+                    // If the cell is a proximity number, display that number
+                    else if (mineData[i][j].proximityNumber != 0)
+                    {
                         mineDisplay[i][j] = String.valueOf(mineData[i][j].proximityNumber);
-                    } else {
+                    }
+                    // If the cell is blank, display a _
+                    else
+                    {
                         mineDisplay[i][j] = "_";
                     }
                 }
+                // If the user has flagged the cell, display an F
                 if (mineData[i][j].flagged)
                 {
                     mineDisplay[i][j] = "F";
@@ -237,6 +245,7 @@ public class Board
         String[][] mineDisplay = displayArray(boardSize,mineData);
         System.out.print("\n  | ");
 
+        // Print x-axis on top of grid
         for(int i = 0; i < boardSize; i++)
         {
             if (i >= 9)
@@ -249,8 +258,10 @@ public class Board
             }
         }
 
+
         for (int i = 0; i < boardSize; i++)
         {
+            // Print y-axis label before grid
             if (i >= 9)
             {
                 System.out.print("\n" + (i + 1) + "|");
@@ -262,9 +273,10 @@ public class Board
 
             for (int j = 0; j < boardSize; j++)
             {
-
+                // Print display grid
                 System.out.print(" " + mineDisplay[i][j] + " |");
 
+                // Print y-axis label after grid
                 if (j == boardSize - 1)
                 {
                     if (i >= 9)
@@ -279,6 +291,7 @@ public class Board
             }
         }
 
+        // Print x-axis below grid
         System.out.print("\n  | ");
 
         for(int i = 0; i < boardSize; i++)
@@ -303,36 +316,41 @@ public class Board
     {
         boolean playing = true;
 
-        int noMines = 0;
-        int boardSize = 0;
+        int noMines = 0;        // Initialise number of mines variable
+        int boardSize = 0;      // Initialise board size variable
 
         System.out.println("-----------------MINESWEEPER-----------------");
 
         while (playing)
         {
 
+            // User chooses their difficulty level from a menu
             int choice = chooseDifficulty();
 
+            // If the user chooses easy mode:
             if (choice == 1) {
                 boardSize = 10;
                 noMines = 10;
                 System.out.print("--------------------EASY---------------------");
             }
+            // If the user chooses medium mode:
             else if (choice == 2) {
                 boardSize = 16;
                 noMines = 40;
                 System.out.print("-------------------------------MEDIUM--------------------------------");
             }
+            // If the user chooses hard mode:
             else if (choice == 3) {
                 boardSize = 20;
                 noMines = 99;
                 System.out.print("----------------------------------------HARD-----------------------------------------");
             }
+            // If the user chooses to create a custom game:
             else if (choice == 4) {
                 System.out.println("-----------------CUSTOM BOARD----------------");
                 boardSize = customBoard();
                 noMines = customMine(boardSize);
-                System.out.print("CUSTOM BOARD--------------------------------");
+                System.out.println("-----------------CUSTOM BOARD----------------");
             }
 
             gamePlay(boardSize, noMines);
@@ -385,9 +403,7 @@ public class Board
     }
 
     public static int customBoard ()
-    // Asks the user how wide they would like their minesweeper board to be, if the number is higher than 40
-    // (the number that can reasonably fit in the console) it lets them know it is a bit too big, but they can
-    // try if they like, and gives them the option to either go ahead or enter a new number. If they enter 0,
+    // Asks the user how wide they would like their minesweeper board to be, if the number is higher than 40,
     // it presents an error and asks for input again.
     {
         Scanner Reader = new Scanner(System.in);
@@ -403,16 +419,14 @@ public class Board
 
                 if (input <= 0)
                 {
-                    System.out.print("Sadly, you will need at least once cell in your board.");
+                    System.out.print("Sadly, you will need at least once cell in your board, please try again.\n");
                 }
-                else if (input >= 40)
+                // 40 Is the maximum width that is reasonably viewable in the console.
+                else if (input > 40)
                 {
-                    System.out.print("You can try, but this board may be a bit big! Do you still want it that big?\n");
-                    boolean goAhead = yesNoAsk();
-                    if (goAhead) {
-                        break;
-                    }
+                    System.out.print("This board size is too large to be fully viewable, please try again.\n");
                 }
+
                 else
                 {
                     break;
@@ -444,7 +458,7 @@ public class Board
 
                 if (input <= 0)
                 {
-                    System.out.println("Sadly, you will need at least one mine to make this a fair game.");
+                    System.out.println("Sadly, you will need at least one mine to make this a fair game, try again.");
                 }
                 else if (input >= boardSize * boardSize)
                 {
@@ -513,53 +527,59 @@ public class Board
     public static void gamePlay(int boardSize, int noMines)
             // Main gameplay loop.
     {
+        // Create new game board based on specifications.
         SweeperCell[][] mineData = addMines(boardSize,noMines);
 
-        int x;
-        int y;
-        boolean loseWin = false;
+        int x;                      // Initialise x-coordinate
+        int y;                      // Initialise y-coordinate
+        boolean loseWin = false;    // Initialise lose/win condition
 
         while (!loseWin)
         {
-
             while (true)
             {
                 printBoard(boardSize, mineData);
 
+                // User chooses from a menu every turn, and selects whether to flag, un-flag, or reveal a cell.
                 int choice = flagOrReveal();
 
+                // If they choose to flag a cell, they input its coordinates.
                 if (choice == 2) {
                     System.out.print("Enter cell's x-coordinate: ");
-                    int yFlag = intInputValidate(boardSize) - 1;
+                    int yFlag = intInputValidate(boardSize);
                     System.out.print("Enter cell's y-coordinate: ");
-                    int xFlag = intInputValidate(boardSize) - 1;
+                    int xFlag = intInputValidate(boardSize);
 
                     mineData[xFlag][yFlag].flagged = true;
 
                     continue;
                 }
+                // If they choose to un-flag a cell, they input its coordinates.
                 if (choice == 3)
                 {
                     System.out.print("Enter cell's x-coordinate: ");
-                    int yFlag = intInputValidate(boardSize) - 1;
+                    int yFlag = intInputValidate(boardSize);
                     System.out.print("Enter cell's y-coordinate: ");
-                    int xFlag = intInputValidate(boardSize) - 1;
+                    int xFlag = intInputValidate(boardSize);
 
                     mineData[xFlag][yFlag].flagged = false;
                 }
+                // If they choose to reveal a cell, we exit the inner menu loop to make the next move in the game.
                 else
                 {
                     break;
                 }
             }
 
+            // User inputs coordinates to reveal the next cell.
             System.out.print("Enter cell's x-coordinate: ");
-            y = intInputValidate(boardSize) - 1;
+            y = intInputValidate(boardSize);
             System.out.print("Enter cell's y-coordinate: ");
-            x = intInputValidate(boardSize) - 1;
+            x = intInputValidate(boardSize);
 
             revealCells(x, y, boardSize, mineData);
 
+            // Checks to see if the user has won or lost.
             loseWin = loseWinCondition(x, y, boardSize, noMines, mineData);
 
         }
@@ -567,6 +587,7 @@ public class Board
 
     public static int flagOrReveal ()
             // This displays a menu offering the user of they want to reveal, flag, or un-flag a cell.
+            // Receives, validates, and outputs a user chosen integer of either 1, 2 or 3.
     {
         Scanner Reader = new Scanner(System.in);
 
@@ -603,7 +624,8 @@ public class Board
     }
 
     public static int intInputValidate (int boardSize)
-            // Receives, validates and returns numerical input to receive a positive number within range as an integer.
+            // Receives, validates and returns numerical co-ordinate input to receive a positive number within the
+            // range of the game board as an integer.
     {
         int input = 0;    // Initialise input variable
 
@@ -615,7 +637,7 @@ public class Board
 
             try
             {
-                input = Reader.nextInt(); // Test if the input is a number
+                input = Reader.nextInt() - 1; // Test if the input is a number
             }
             catch (InputMismatchException x)
             {
@@ -654,7 +676,7 @@ public class Board
             return true;
         }
 
-        int counter = 0;
+        int counter = 0;        // Initialise counter to count total visible cells
 
         for (int i = 0; i < boardSize; i++)
         {
@@ -667,6 +689,8 @@ public class Board
             }
         }
 
+        // If the total number of visible cells == the total number of cells minus the number of cells with mines,
+        // The user has won the game.
         if (counter == (boardSize * boardSize - noMines))
         {
             printBoard(boardSize, mineData);
@@ -674,6 +698,7 @@ public class Board
             return true;
         }
 
+        // If neither condition has been met, return true to continue the game.
         return false;
     }
 
