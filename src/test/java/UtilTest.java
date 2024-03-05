@@ -19,17 +19,17 @@ public class UtilTest {
         Assertions.assertEquals(0,newCell.cellNumber, "Default Cell.cellNumber != 0");
     }
 
-//    @Test
-//    public void populateArrayTest()
-//    {
-//        int boardSize = 10;
-//        SweeperCell[][] array = Board.populateArray(boardSize);
-//
-//        if (array[0][0] != null)
-//        {
-//
-//        }
-//
-//        Assertions.assertEquals(array[boardSize][boardSize],SweeperCell);
-//    }
+    @Test
+    public void populateArrayTest()
+    {
+        int boardSize = 10;
+        SweeperCell[][] array = Board.populateArray(boardSize);
+
+        for (int i = 0; i < boardSize; i++)
+        {
+            
+        }
+
+        Assertions.assertEquals(array[boardSize][boardSize],SweeperCell);
+    }
 }
